@@ -13,6 +13,16 @@ const router = createRouter({
       name: 'role-detail',
       component: () => import('@/views/RoleDetailView.vue'),
     },
+    {
+      path: '/plays',
+      name: 'play-list',
+      component: () => import('@/views/PlayListView.vue'),
+    },
+    {
+      path: '/play/:id',
+      name: 'play-detail',
+      component: () => import('@/views/PlayDetailView.vue'),
+    },
   ],
 })
 
