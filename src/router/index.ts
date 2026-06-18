@@ -38,6 +38,11 @@ const router = createRouter({
       name: 'role-compare',
       component: () => import('@/views/RoleCompareView.vue'),
     },
+    {
+      path: '/culture',
+      name: 'culture-guide',
+      component: () => import('@/views/CultureGuideView.vue'),
+    },
   ],
 })
 

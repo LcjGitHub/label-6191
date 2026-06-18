@@ -41,6 +41,16 @@
           角色对比
         </router-link>
         <router-link
+          to="/culture"
+          class="app-nav__link"
+          :class="{ 'is-active': isCultureActive }"
+        >
+          <el-icon class="el-icon--left">
+            <Guide />
+          </el-icon>
+          文化导览
+        </router-link>
+        <router-link
           to="/favorites"
           class="app-nav__link"
           :class="{ 'is-active': isFavoriteActive }"
@@ -70,7 +80,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Star, DataLine, Histogram } from '@element-plus/icons-vue'
+import { Star, DataLine, Histogram, Guide } from '@element-plus/icons-vue'
 import { useFavoriteStore } from '@/stores/favorite'
 
 const route = useRoute()
@@ -104,6 +114,10 @@ const isFavoriteActive = computed(() => {
 
 const isCompareActive = computed(() => {
   return route.name === 'role-compare'
+})
+
+const isCultureActive = computed(() => {
+  return route.name === 'culture-guide'
 })
 </script>
 
