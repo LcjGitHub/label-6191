@@ -33,6 +33,11 @@ const router = createRouter({
       name: 'overview',
       component: () => import('@/views/OverviewView.vue'),
     },
+    {
+      path: '/compare',
+      name: 'role-compare',
+      component: () => import('@/views/RoleCompareView.vue'),
+    },
   ],
 })
 

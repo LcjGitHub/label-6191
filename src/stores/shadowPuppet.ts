@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import mockData from '@/mock/shadow-puppets.json'
 import type { RoleCategory, ShadowPuppet } from '@/types/shadowPuppet'
 
@@ -59,12 +59,74 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
     return roles.filter((r) => r.category === category)
   }
 
+  /** 对比选中的角色 ID 列表（最多两个） */
+  const compareRoleIds = ref<string[]>([])
+
+  /**
+   * 设置对比位置的角色
+   * @param index - 对比位置索引（0 或 1）
+   * @param roleId - 角色 ID，传空字符串清除该位置
+   */
+  function setCompareRole(index: 0 | 1, roleId: string) {
+    const ids = [...compareRoleIds.value]
+    while (ids.length < 2) ids.push('')
+    ids[index] = roleId
+    compareRoleIds.value = ids.slice(0, 2)
+  }
+
+  /** 清除所有对比选择 */
+  function clearCompareRoles() {
+    compareRoleIds.value = []
+  }
+
+  /** 两个对比位置的角色数据（可能为 undefined） */
+  const compareRoles = computed<(ShadowPuppet | undefined)[]>(() => {
+    while (compareRoleIds.value.length < 2) compareRoleIds.value.push('')
+    return compareRoleIds.value.slice(0, 2).map((id) => (id ? getRoleById(id) : undefined))
+  })
+
+  /** 是否两个对比位置都已选中有效角色 */
+  const isCompareReady = computed(() => {
+    return compareRoles.value.every((r) => r !== undefined)
+  })
+
+  /**
+   * 对比两位角色的行当差异
+   * 返回对比结果摘要，供面板展示
+   */
+  const compareSummary = computed(() => {
+    const [r1, r2] = compareRoles.value
+    if (!r1 || !r2) return null
+    return {
+      sameCategory: r1.category === r2.category,
+      commonAliases: r1.aliases.filter((a) => r2.aliases.includes(a)),
+      aliasCountDiff: Math.abs(r1.aliases.length - r2.aliases.length),
+      samePlay: r1.representativePlay.title === r2.representativePlay.title,
+    }
+  })
+
+  /**
+   * 获取除指定角色外的全部角色列表（用于下拉选择时排除已选角色）
+   * @param excludeId - 要排除的角色 ID（可选）
+   */
+  function getRolesForSelect(excludeId?: string): ShadowPuppet[] {
+    if (!excludeId) return roles
+    return roles.filter((r) => r.id !== excludeId)
+  }
+
   return {
     roles,
     rolesByCategory,
     categoryCount,
+    compareRoleIds,
+    compareRoles,
+    isCompareReady,
+    compareSummary,
     getRoleById,
     getRolesByCategory,
     getRandomRoleByCategory,
+    setCompareRole,
+    clearCompareRoles,
+    getRolesForSelect,
   }
 })

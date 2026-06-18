@@ -31,6 +31,16 @@
           统计概览
         </router-link>
         <router-link
+          to="/compare"
+          class="app-nav__link"
+          :class="{ 'is-active': isCompareActive }"
+        >
+          <el-icon class="el-icon--left">
+            <Histogram />
+          </el-icon>
+          角色对比
+        </router-link>
+        <router-link
           to="/favorites"
           class="app-nav__link"
           :class="{ 'is-active': isFavoriteActive }"
@@ -60,7 +70,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Star, DataLine } from '@element-plus/icons-vue'
+import { Star, DataLine, Histogram } from '@element-plus/icons-vue'
 import { useFavoriteStore } from '@/stores/favorite'
 
 const route = useRoute()
@@ -90,6 +100,10 @@ const isFavoriteActive = computed(() => {
   if (route.name === 'favorites') return true
   if (route.name === 'role-detail' && route.query.from === 'favorites') return true
   return false
+})
+
+const isCompareActive = computed(() => {
+  return route.name === 'role-compare'
 })
 </script>
 
