@@ -8,7 +8,7 @@
       </div>
       <div class="chapter-card__title-wrap">
         <h3 class="chapter-card__title">{{ chapter.title }}</h3>
-        <span class="chapter-card__subtitle">{{ chapter.subtitle }}</span>
+        <p class="chapter-card__subtitle">{{ chapter.subtitle }}</p>
       </div>
     </div>
     <div class="chapter-card__content">
@@ -85,6 +85,7 @@ const iconComponent = computed(() => iconMap[props.chapter.icon] || Document)
 }
 
 .chapter-card__subtitle {
+  margin: 0;
   font-size: 0.9rem;
   color: #8b7355;
 }

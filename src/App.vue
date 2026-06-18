@@ -48,7 +48,7 @@
           <el-icon class="el-icon--left">
             <Guide />
           </el-icon>
-          文化导览
+          导览
         </router-link>
         <router-link
           to="/favorites"
@@ -165,21 +165,23 @@ const isCultureActive = computed(() => {
 
 .app-nav {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .app-nav__link {
-  padding: 8px 16px;
+  padding: 6px 12px;
   color: #ffd700;
   text-decoration: none;
   border-radius: 4px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   transition: all 0.2s ease;
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 }
 
 .app-nav__link:hover {
@@ -193,7 +195,7 @@ const isCultureActive = computed(() => {
 }
 
 .fav-badge {
-  margin-left: 12px;
+  margin-left: 8px;
   --el-badge-bg-color: #ff6b6b;
   --el-badge-text-color: #fff;
 }
@@ -215,6 +217,34 @@ const isCultureActive = computed(() => {
   border-top: 1px solid #e8d5c4;
 }
 
+@media (max-width: 900px) {
+  .app-header {
+    padding: 16px 20px;
+  }
+
+  .app-header__left {
+    gap: 12px;
+  }
+
+  .app-title {
+    font-size: 1.25rem;
+    letter-spacing: 1px;
+  }
+
+  .app-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .app-nav {
+    gap: 2px;
+  }
+
+  .app-nav__link {
+    padding: 5px 8px;
+    font-size: 0.78rem;
+  }
+}
+
 @media (max-width: 768px) {
   .app-header {
     flex-direction: column;
@@ -226,6 +256,12 @@ const isCultureActive = computed(() => {
     width: 100%;
     justify-content: flex-start;
     flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .app-nav__link {
+    padding: 6px 10px;
+    font-size: 0.85rem;
   }
 }
 </style>
