@@ -149,7 +149,7 @@ const isFavoriteActive = computed(() => {
 }
 
 .fav-badge {
-  margin-left: 4px;
+  margin-left: 12px;
   --el-badge-bg-color: #ff6b6b;
   --el-badge-text-color: #fff;
 }

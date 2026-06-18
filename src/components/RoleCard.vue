@@ -8,6 +8,7 @@
       class="favorite-btn"
       :type="isFavorited ? 'warning' : 'default'"
       :text="!isFavorited"
+      :aria-label="isFavorited ? '取消收藏' : '收藏'"
       circle
       @click.stop="onToggleFavorite"
     >

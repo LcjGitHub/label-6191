@@ -15,14 +15,6 @@
           暂无收藏，快去图鉴里挑选喜欢的角色吧~
         </p>
       </div>
-      <el-button
-        v-if="favoriteCount > 0"
-        type="danger"
-        plain
-        @click="onClearAll"
-      >
-        清空收藏
-      </el-button>
     </div>
 
     <div v-if="favoriteCount > 0" class="role-grid">
@@ -49,7 +41,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Star } from '@element-plus/icons-vue'
-import { ElMessageBox, ElMessage } from 'element-plus'
 import RoleCard from '@/components/RoleCard.vue'
 import { useFavoriteStore } from '@/stores/favorite'
 
@@ -57,24 +48,6 @@ const favoriteStore = useFavoriteStore()
 
 const favoriteRoles = computed(() => favoriteStore.favoriteRoles)
 const favoriteCount = computed(() => favoriteStore.favoriteCount)
-
-async function onClearAll() {
-  try {
-    await ElMessageBox.confirm(
-      '确定要清空所有收藏吗？此操作无法撤销。',
-      '清空收藏',
-      {
-        confirmButtonText: '确定清空',
-        cancelButtonText: '取消',
-        type: 'warning',
-      },
-    )
-    favoriteStore.clearAllFavorites()
-    ElMessage.success('已清空全部收藏')
-  } catch {
-    // 用户取消操作
-  }
-}
 </script>
 
 <style scoped>
