@@ -71,15 +71,6 @@
 
       <div class="selector-actions">
         <el-button
-          type="primary"
-          size="large"
-          :disabled="!isBothSelected"
-          @click="onStartCompare"
-        >
-          <el-icon class="el-icon--left"><View /></el-icon>
-          开始对比
-        </el-button>
-        <el-button
           size="large"
           :disabled="!hasAnySelection"
           @click="onClearAll"
@@ -88,41 +79,6 @@
           重置选择
         </el-button>
       </div>
-
-      <Transition name="fade">
-        <div v-if="store.compareSummary" class="compare-summary">
-          <div class="summary-item">
-            <span class="summary-label">行当对比：</span>
-            <el-tag
-              :type="store.compareSummary.sameCategory ? 'success' : 'info'"
-              size="small"
-            >
-              {{ store.compareSummary.sameCategory ? '相同行当' : '不同行当' }}
-            </el-tag>
-          </div>
-          <div v-if="store.compareSummary.commonAliases.length > 0" class="summary-item">
-            <span class="summary-label">共同别名（{{ store.compareSummary.commonAliases.length }}）：</span>
-            <el-tag
-              v-for="alias in store.compareSummary.commonAliases"
-              :key="alias"
-              size="small"
-              type="warning"
-              effect="plain"
-            >
-              {{ alias }}
-            </el-tag>
-          </div>
-          <div class="summary-item">
-            <span class="summary-label">代表剧目：</span>
-            <el-tag
-              :type="store.compareSummary.samePlay ? 'success' : 'warning'"
-              size="small"
-            >
-              {{ store.compareSummary.samePlay ? '同一名剧' : '不同剧目' }}
-            </el-tag>
-          </div>
-        </div>
-      </Transition>
     </el-card>
 
     <RoleComparePanel
@@ -141,7 +97,6 @@ import {
   UserFilled,
   Switch,
   RefreshRight,
-  View,
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import RoleComparePanel from '@/components/RoleComparePanel.vue'
@@ -160,21 +115,16 @@ const selectedIdB = computed({
   set: (val: string) => store.setCompareRole(1, val || ''),
 })
 
-const roleA = computed(() => store.compareRoles[0])
-const roleB = computed(() => store.compareRoles[1])
+const roleA = computed(() => store.getCompareRole(0))
+const roleB = computed(() => store.getCompareRole(1))
 
 const optionsA = computed(() => store.getRolesForSelect(selectedIdB.value || undefined))
 const optionsB = computed(() => store.getRolesForSelect(selectedIdA.value || undefined))
 
-const hasAnySelection = computed(() => selectedIdA.value || selectedIdB.value)
-const isBothSelected = computed(() => selectedIdA.value && selectedIdB.value)
+const hasAnySelection = computed(() => !!(selectedIdA.value || selectedIdB.value))
 
 function formatOptionLabel(role: ShadowPuppet): string {
   return `${role.name}（${role.category}）`
-}
-
-function onStartCompare() {
-  ElMessage.success('已加载两位角色对比信息')
 }
 
 function onClearAll() {
@@ -287,41 +237,6 @@ onMounted(() => {
   border-top: 1px dashed #e8d5c4;
 }
 
-.compare-summary {
-  margin-top: 20px;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #fdf6ec 0%, #f5e6d3 100%);
-  border-radius: 8px;
-  border: 1px solid #e8d5c4;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 24px;
-}
-
-.summary-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.summary-label {
-  font-size: 0.85rem;
-  color: #8b4513;
-  font-weight: 600;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
-}
-
 @media (max-width: 768px) {
   .selector-grid {
     grid-template-columns: 1fr;
@@ -331,11 +246,6 @@ onMounted(() => {
   .selector-divider {
     padding: 0;
     transform: rotate(90deg);
-  }
-
-  .compare-summary {
-    flex-direction: column;
-    align-items: flex-start;
   }
 
   .selector-actions {

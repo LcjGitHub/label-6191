@@ -79,30 +79,20 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
     compareRoleIds.value = []
   }
 
-  /** 两个对比位置的角色数据（可能为 undefined） */
-  const compareRoles = computed<(ShadowPuppet | undefined)[]>(() => {
-    while (compareRoleIds.value.length < 2) compareRoleIds.value.push('')
-    return compareRoleIds.value.slice(0, 2).map((id) => (id ? getRoleById(id) : undefined))
-  })
+  /**
+   * 查询指定对比位置的角色数据
+   * @param index - 对比位置索引（0 或 1）
+   */
+  function getCompareRole(index: 0 | 1): ShadowPuppet | undefined {
+    const id = compareRoleIds.value[index]
+    return id ? getRoleById(id) : undefined
+  }
 
   /** 是否两个对比位置都已选中有效角色 */
   const isCompareReady = computed(() => {
-    return compareRoles.value.every((r) => r !== undefined)
-  })
-
-  /**
-   * 对比两位角色的行当差异
-   * 返回对比结果摘要，供面板展示
-   */
-  const compareSummary = computed(() => {
-    const [r1, r2] = compareRoles.value
-    if (!r1 || !r2) return null
-    return {
-      sameCategory: r1.category === r2.category,
-      commonAliases: r1.aliases.filter((a) => r2.aliases.includes(a)),
-      aliasCountDiff: Math.abs(r1.aliases.length - r2.aliases.length),
-      samePlay: r1.representativePlay.title === r2.representativePlay.title,
-    }
+    const idA = compareRoleIds.value[0]
+    const idB = compareRoleIds.value[1]
+    return !!(idA && idB && getRoleById(idA) && getRoleById(idB))
   })
 
   /**
@@ -119,14 +109,13 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
     rolesByCategory,
     categoryCount,
     compareRoleIds,
-    compareRoles,
     isCompareReady,
-    compareSummary,
     getRoleById,
     getRolesByCategory,
     getRandomRoleByCategory,
     setCompareRole,
     clearCompareRoles,
+    getCompareRole,
     getRolesForSelect,
   }
 })

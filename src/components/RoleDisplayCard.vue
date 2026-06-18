@@ -1,13 +1,10 @@
 <template>
-  <div
-    class="role-display-card"
-    :class="`role-display-card--${position}`"
-  >
+  <div class="role-display-card">
     <div class="role-display-card__header">
       <span class="role-display-card__label">{{ label }}</span>
     </div>
 
-    <div v-if="role" class="role-display-card__body">
+    <div class="role-display-card__body">
       <div class="role-display-card__silhouette">
         <SilhouetteSvg :path="role.silhouettePath" />
       </div>
@@ -52,29 +49,20 @@
         </el-card>
       </section>
     </div>
-
-    <div v-else class="role-display-card__placeholder">
-      <el-icon :size="64" color="#c9b896">
-        <User />
-      </el-icon>
-      <p class="placeholder-text">未选择角色</p>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Menu, Document, User } from '@element-plus/icons-vue'
+import { Menu, Document } from '@element-plus/icons-vue'
 import SilhouetteSvg from './SilhouetteSvg.vue'
 import type { ShadowPuppet } from '@/types/shadowPuppet'
 
 withDefaults(
   defineProps<{
-    role: ShadowPuppet | undefined
-    position?: 'left' | 'right'
+    role: ShadowPuppet
     label?: string
   }>(),
   {
-    position: 'left',
     label: '角色',
   },
 )
@@ -89,14 +77,6 @@ withDefaults(
   display: flex;
   flex-direction: column;
   min-height: 100%;
-}
-
-.role-display-card--left {
-  box-shadow: -4px 0 20px -8px rgba(139, 69, 19, 0.15);
-}
-
-.role-display-card--right {
-  box-shadow: 4px 0 20px -8px rgba(139, 69, 19, 0.15);
 }
 
 .role-display-card__header {
@@ -210,30 +190,6 @@ withDefaults(
   line-height: 1.75;
   color: #666;
   font-size: 0.85rem;
-}
-
-.role-display-card__placeholder {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  gap: 16px;
-  background: repeating-linear-gradient(
-    45deg,
-    #fffef9,
-    #fffef9 10px,
-    #fdf9f0 10px,
-    #fdf9f0 20px
-  );
-}
-
-.placeholder-text {
-  margin: 0;
-  color: #c9b896;
-  font-size: 0.95rem;
-  letter-spacing: 2px;
 }
 
 @media (max-width: 768px) {

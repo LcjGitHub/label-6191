@@ -1,9 +1,8 @@
 <template>
   <div class="compare-panel">
-    <div class="compare-panel__grid">
+    <div v-if="roleA && roleB" class="compare-panel__grid">
       <RoleDisplayCard
         :role="roleA"
-        position="left"
         :label="labelA"
       />
       <div class="compare-panel__divider" aria-hidden="true">
@@ -11,22 +10,16 @@
       </div>
       <RoleDisplayCard
         :role="roleB"
-        position="right"
         :label="labelB"
       />
     </div>
 
-    <div v-if="!roleA || !roleB" class="compare-panel__empty">
-      <el-empty
-        :description="emptyText"
-        :image-size="120"
-      >
-        <template #image>
-          <el-icon :size="80" color="#d4a574">
-            <Promotion />
-          </el-icon>
-        </template>
-      </el-empty>
+    <div v-else class="compare-panel__empty">
+      <el-icon :size="72" color="#d4a574">
+        <Promotion />
+      </el-icon>
+      <p class="empty-text">{{ emptyText }}</p>
+      <p class="empty-hint">请从上方选择两位角色进行对比</p>
     </div>
   </div>
 </template>
@@ -52,12 +45,12 @@ const props = withDefaults(
 
 const emptyText = computed(() => {
   if (!props.roleA && !props.roleB) {
-    return '请从上方选择两位角色开始对比'
+    return '尚未选择任何角色'
   }
   if (!props.roleA) {
-    return '请选择左侧角色'
+    return '还需选择一位角色'
   }
-  return '请选择右侧角色'
+  return '还需选择一位角色'
 })
 </script>
 
@@ -71,7 +64,6 @@ const emptyText = computed(() => {
   grid-template-columns: 1fr auto 1fr;
   gap: 20px;
   align-items: stretch;
-  margin-bottom: 16px;
 }
 
 .compare-panel__divider {
@@ -119,8 +111,27 @@ const emptyText = computed(() => {
 .compare-panel__empty {
   background: #fffef9;
   border: 1px dashed #d4a574;
-  border-radius: 8px;
-  padding: 32px;
+  border-radius: 12px;
+  padding: 60px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-text {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #8b4513;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.empty-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #c9b896;
 }
 
 @media (max-width: 960px) {
