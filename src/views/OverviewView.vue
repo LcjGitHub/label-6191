@@ -3,10 +3,6 @@
     <header class="page-header">
       <h1 class="page-title">行当统计概览</h1>
       <p class="page-desc">一览皮影戏四大行当角色分布与代表人物</p>
-      <el-button type="warning" plain @click="refreshRandom">
-        <el-icon class="el-icon--left"><Refresh /></el-icon>
-        换一批代表角色
-      </el-button>
     </header>
 
     <section class="stats-summary">
@@ -28,13 +24,6 @@
           />
         </div>
       </div>
-      <div class="summary-card summary-card--total">
-        <div class="summary-card__cat">角色总计</div>
-        <div class="summary-card__num">
-          <span class="num">{{ store.roles.length }}</span>
-          <span class="unit">人</span>
-        </div>
-      </div>
     </section>
 
     <section class="rep-section">
@@ -45,7 +34,6 @@
           v-for="cat in categories"
           :key="cat"
           :category="cat"
-          :count="store.categoryCount.get(cat) ?? 0"
           :representative="reps[cat]"
         />
       </div>
@@ -55,7 +43,6 @@
 
 <script setup lang="ts">
 import { reactive, onMounted } from 'vue'
-import { Refresh } from '@element-plus/icons-vue'
 import CategoryStatCard from '@/components/CategoryStatCard.vue'
 import { CATEGORIES, useShadowPuppetStore } from '@/stores/shadowPuppet'
 import type { RoleCategory, ShadowPuppet } from '@/types/shadowPuppet'
@@ -102,7 +89,6 @@ onMounted(() => {
 
 .page-header {
   margin-bottom: 28px;
-  position: relative;
 }
 
 .page-title {
@@ -118,15 +104,9 @@ onMounted(() => {
   font-size: 0.95rem;
 }
 
-.page-header .el-button {
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
 .stats-summary {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 36px;
 }
@@ -159,7 +139,6 @@ onMounted(() => {
 .summary-card--dan::before { background: #67c23a; }
 .summary-card--jing::before { background: #e6a23c; }
 .summary-card--chou::before { background: #f56c6c; }
-.summary-card--total::before { background: #8b4513; }
 
 .summary-card__cat {
   font-size: 0.9rem;
@@ -242,11 +221,6 @@ onMounted(() => {
 }
 
 @media (max-width: 640px) {
-  .page-header .el-button {
-    position: static;
-    margin-top: 12px;
-  }
-
   .stats-summary {
     grid-template-columns: 1fr;
   }
