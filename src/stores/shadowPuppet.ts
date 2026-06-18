@@ -119,6 +119,16 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
     })
   }
 
+  /**
+   * 根据角色 ID 查询同一行当的其他角色（排除自身）
+   * @param roleId - 当前角色 ID
+   */
+  function getSameCategoryRoles(roleId: string): ShadowPuppet[] {
+    const current = getRoleById(roleId)
+    if (!current) return []
+    return roles.filter((r) => r.category === current.category && r.id !== roleId)
+  }
+
   return {
     roles,
     rolesByCategory,
@@ -133,5 +143,6 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
     getCompareRole,
     getRolesForSelect,
     searchRoles,
+    getSameCategoryRoles,
   }
 })

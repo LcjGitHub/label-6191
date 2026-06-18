@@ -51,6 +51,18 @@
         </div>
       </div>
     </el-card>
+
+    <section v-if="sameCategoryRoles.length > 0" class="related-section">
+      <h2 class="related-title">同{{ role.category }}行角色</h2>
+      <div class="related-scroll">
+        <RoleCard
+          v-for="item in sameCategoryRoles"
+          :key="item.id"
+          :role="item"
+          class="related-card"
+        />
+      </div>
+    </section>
   </div>
 
   <el-empty v-else description="未找到该角色">
@@ -63,6 +75,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Star } from '@element-plus/icons-vue'
 import SilhouetteSvg from '@/components/SilhouetteSvg.vue'
+import RoleCard from '@/components/RoleCard.vue'
 import { useShadowPuppetStore } from '@/stores/shadowPuppet'
 import { useFavoriteStore } from '@/stores/favorite'
 
@@ -75,6 +88,12 @@ const favoriteStore = useFavoriteStore()
 const role = computed(() => {
   const id = route.params.id as string
   return store.getRoleById(id)
+})
+
+/** 同行情其他角色列表 */
+const sameCategoryRoles = computed(() => {
+  if (!role.value) return []
+  return store.getSameCategoryRoles(role.value.id)
 })
 
 const isFavorited = computed(() => {
@@ -218,6 +237,44 @@ function goBack() {
   font-size: 0.95rem;
 }
 
+.related-section {
+  margin-top: 32px;
+}
+
+.related-title {
+  margin: 0 0 16px;
+  font-size: 1.15rem;
+  color: #8b4513;
+  border-left: 3px solid #ffd700;
+  padding-left: 10px;
+}
+
+.related-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 8px 4px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: #d4a574 transparent;
+}
+
+.related-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.related-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.related-scroll::-webkit-scrollbar-thumb {
+  background-color: #d4a574;
+  border-radius: 3px;
+}
+
+.related-card {
+  flex: 0 0 180px;
+}
+
 @media (max-width: 768px) {
   .detail-layout {
     grid-template-columns: 1fr;
@@ -229,6 +286,10 @@ function goBack() {
 
   .favorite-btn {
     margin-left: 0;
+  }
+
+  .related-card {
+    flex: 0 0 160px;
   }
 }
 </style>
