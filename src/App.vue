@@ -9,14 +9,14 @@
         <router-link
           to="/"
           class="app-nav__link"
-          :class="{ 'is-active': $route.name === 'home' }"
+          :class="{ 'is-active': isRoleActive }"
         >
           角色图鉴
         </router-link>
         <router-link
           to="/plays"
           class="app-nav__link"
-          :class="{ 'is-active': $route.name === 'play-list' || $route.name === 'play-detail' }"
+          :class="{ 'is-active': isPlayActive }"
         >
           剧目百科
         </router-link>
@@ -32,6 +32,22 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+const isRoleActive = computed(() => {
+  if (route.name === 'home') return true
+  if (route.name === 'role-detail' && route.query.from !== 'play') return true
+  return false
+})
+
+const isPlayActive = computed(() => {
+  if (route.name === 'play-list' || route.name === 'play-detail') return true
+  if (route.name === 'role-detail' && route.query.from === 'play') return true
+  return false
+})
 </script>
 
 <style scoped>

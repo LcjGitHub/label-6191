@@ -20,16 +20,16 @@
       <section class="detail-section">
         <h2 class="section-title">参演角色</h2>
         <div class="role-list">
-          <el-tag
+          <span
             v-for="role in relatedRoles"
             :key="role.id"
-            size="large"
             class="role-tag"
-            effect="plain"
             @click="goRoleDetail(role.id)"
           >
-            {{ role.name }}
-          </el-tag>
+            <el-tag size="large">
+              {{ role.name }}
+            </el-tag>
+          </span>
         </div>
         <p v-if="relatedRoles.length === 0" class="empty-hint">暂无关联角色</p>
       </section>
@@ -69,7 +69,11 @@ function goBack() {
 }
 
 function goRoleDetail(roleId: string) {
-  router.push({ name: 'role-detail', params: { id: roleId } })
+  router.push({
+    name: 'role-detail',
+    params: { id: roleId },
+    query: { from: 'play', playId: route.params.id },
+  })
 }
 </script>
 
@@ -142,15 +146,25 @@ function goRoleDetail(roleId: string) {
 }
 
 .role-tag {
-  font-size: 0.95rem;
   cursor: pointer;
-  padding: 8px 16px;
   transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.role-tag :deep(.el-tag) {
+  background: #fdf6ec;
+  color: #8b4513;
+  border: 1px solid #d4a574;
 }
 
 .role-tag:hover {
   transform: translateY(-2px);
-  opacity: 0.9;
+}
+
+.role-tag:hover :deep(.el-tag) {
+  background: #f5e6d3;
+  border-color: #8b4513;
+  color: #5c3d2e;
 }
 
 .empty-hint {

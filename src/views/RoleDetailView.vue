@@ -1,7 +1,7 @@
 <template>
   <div v-if="role" class="detail-view">
     <el-button class="back-btn" @click="goBack">
-      ← 返回图鉴
+      ← {{ backText }}
     </el-button>
 
     <el-card class="detail-card" shadow="never">
@@ -63,9 +63,22 @@ const role = computed(() => {
   return store.getRoleById(id)
 })
 
-/** 返回首页 */
+const fromSource = computed(() => route.query.from as string | undefined)
+const fromPlayId = computed(() => route.query.playId as string | undefined)
+
+const backText = computed(() => {
+  if (fromSource.value === 'play' && fromPlayId.value) {
+    return '返回剧目'
+  }
+  return '返回图鉴'
+})
+
 function goBack() {
-  router.push({ name: 'home' })
+  if (fromSource.value === 'play' && fromPlayId.value) {
+    router.push({ name: 'play-detail', params: { id: fromPlayId.value } })
+  } else {
+    router.push({ name: 'home' })
+  }
 }
 </script>
 
