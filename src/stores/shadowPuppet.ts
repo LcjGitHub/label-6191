@@ -22,12 +22,32 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
     return map
   })
 
+  /** 每个行当的角色数量统计 */
+  const categoryCount = computed(() => {
+    const map = new Map<RoleCategory, number>()
+    for (const cat of CATEGORIES) {
+      map.set(cat, roles.filter((r) => r.category === cat).length)
+    }
+    return map
+  })
+
   /**
    * 根据 ID 查找角色
    * @param id - 角色唯一标识
    */
   function getRoleById(id: string): ShadowPuppet | undefined {
     return roles.find((r) => r.id === id)
+  }
+
+  /**
+   * 按行当随机抽取一个代表角色
+   * @param category - 行当分类
+   */
+  function getRandomRoleByCategory(category: RoleCategory): ShadowPuppet | undefined {
+    const list = roles.filter((r) => r.category === category)
+    if (list.length === 0) return undefined
+    const idx = Math.floor(Math.random() * list.length)
+    return list[idx]
   }
 
   /**
@@ -42,7 +62,9 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
   return {
     roles,
     rolesByCategory,
+    categoryCount,
     getRoleById,
     getRolesByCategory,
+    getRandomRoleByCategory,
   }
 })

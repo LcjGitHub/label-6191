@@ -21,6 +21,16 @@
           剧目百科
         </router-link>
         <router-link
+          to="/overview"
+          class="app-nav__link"
+          :class="{ 'is-active': isOverviewActive }"
+        >
+          <el-icon class="el-icon--left">
+            <DataLine />
+          </el-icon>
+          统计概览
+        </router-link>
+        <router-link
           to="/favorites"
           class="app-nav__link"
           :class="{ 'is-active': isFavoriteActive }"
@@ -50,7 +60,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Star } from '@element-plus/icons-vue'
+import { Star, DataLine } from '@element-plus/icons-vue'
 import { useFavoriteStore } from '@/stores/favorite'
 
 const route = useRoute()
@@ -60,13 +70,19 @@ const favoriteCount = computed(() => favoriteStore.favoriteCount)
 
 const isRoleActive = computed(() => {
   if (route.name === 'home') return true
-  if (route.name === 'role-detail' && route.query.from !== 'play' && route.query.from !== 'favorites') return true
+  if (route.name === 'role-detail' && route.query.from !== 'play' && route.query.from !== 'favorites' && route.query.from !== 'overview') return true
   return false
 })
 
 const isPlayActive = computed(() => {
   if (route.name === 'play-list' || route.name === 'play-detail') return true
   if (route.name === 'role-detail' && route.query.from === 'play') return true
+  return false
+})
+
+const isOverviewActive = computed(() => {
+  if (route.name === 'overview') return true
+  if (route.name === 'role-detail' && route.query.from === 'overview') return true
   return false
 })
 

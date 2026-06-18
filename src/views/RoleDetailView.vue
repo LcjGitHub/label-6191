@@ -98,6 +98,9 @@ const backText = computed(() => {
   if (fromSource.value === 'favorites') {
     return '返回收藏夹'
   }
+  if (fromSource.value === 'overview') {
+    return '返回概览'
+  }
   return '返回图鉴'
 })
 
@@ -106,6 +109,8 @@ function goBack() {
     router.push({ name: 'play-detail', params: { id: fromPlayId.value } })
   } else if (fromSource.value === 'favorites') {
     router.push({ name: 'favorites' })
+  } else if (fromSource.value === 'overview') {
+    router.push({ name: 'overview' })
   } else {
     router.push({ name: 'home' })
   }
