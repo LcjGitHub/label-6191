@@ -3,6 +3,14 @@
     <h1 class="page-title">角色图鉴</h1>
     <p class="page-desc">按生旦净丑分类浏览皮影戏经典角色</p>
 
+    <el-input
+      v-model="searchKeyword"
+      class="search-input"
+      placeholder="搜索角色名称或别名，如：刘备、玄德、卧龙"
+      clearable
+      :prefix-icon="Search"
+    />
+
     <el-tabs v-model="activeTab" class="category-tabs">
       <el-tab-pane label="全部" name="all" />
       <el-tab-pane
@@ -23,13 +31,14 @@
 
     <el-empty
       v-if="filteredRoles.length === 0"
-      description="暂无角色"
+      :description="emptyDescription"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { Search } from '@element-plus/icons-vue'
 import RoleCard from '@/components/RoleCard.vue'
 import { CATEGORIES, useShadowPuppetStore } from '@/stores/shadowPuppet'
 import type { RoleCategory } from '@/types/shadowPuppet'
@@ -37,11 +46,18 @@ import type { RoleCategory } from '@/types/shadowPuppet'
 const store = useShadowPuppetStore()
 const categories = CATEGORIES
 const activeTab = ref<RoleCategory | 'all'>('all')
+const searchKeyword = ref('')
 
-/** 当前 Tab 下的角色列表 */
+/** 当前 Tab + 搜索关键词过滤后的角色列表 */
 const filteredRoles = computed(() =>
-  store.getRolesByCategory(activeTab.value),
+  store.searchRoles(searchKeyword.value, activeTab.value),
 )
+
+/** 空状态描述：区分是无数据还是搜索无匹配 */
+const emptyDescription = computed(() => {
+  if (searchKeyword.value.trim()) return '未找到匹配的角色，试试其他关键词'
+  return '暂无角色'
+})
 </script>
 
 <style scoped>
@@ -60,6 +76,11 @@ const filteredRoles = computed(() =>
   margin: 0 0 24px;
   color: #8b7355;
   font-size: 0.95rem;
+}
+
+.search-input {
+  margin-bottom: 20px;
+  max-width: 480px;
 }
 
 .category-tabs {

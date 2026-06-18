@@ -104,6 +104,21 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
     return roles.filter((r) => r.id !== excludeId)
   }
 
+  /**
+   * 按名称和别名搜索角色，同时可叠加行当分类筛选
+   * @param keyword - 搜索关键词，空字符串返回所有结果
+   * @param category - 可选的行当分类过滤，传 'all' 或不传则不分类
+   */
+  function searchRoles(keyword: string, category: RoleCategory | 'all' = 'all'): ShadowPuppet[] {
+    const trimmed = keyword.trim().toLowerCase()
+    const list = category === 'all' ? roles : roles.filter((r) => r.category === category)
+    if (!trimmed) return list
+    return list.filter((r) => {
+      if (r.name.toLowerCase().includes(trimmed)) return true
+      return r.aliases.some((a) => a.toLowerCase().includes(trimmed))
+    })
+  }
+
   return {
     roles,
     rolesByCategory,
@@ -117,5 +132,6 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
     clearCompareRoles,
     getCompareRole,
     getRolesForSelect,
+    searchRoles,
   }
 })
