@@ -129,6 +129,19 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
     return roles.filter((r) => r.category === current.category && r.id !== roleId)
   }
 
+  /**
+   * 获取相邻角色的编号（按模拟数据顺序）
+   * @param roleId - 当前角色 ID
+   * @returns 上一个和下一个角色的 ID，没有则返回 null
+   */
+  function getAdjacentRoles(roleId: string): { prev: string | null; next: string | null } {
+    const index = roles.findIndex((r) => r.id === roleId)
+    if (index === -1) return { prev: null, next: null }
+    const prev = index > 0 ? roles[index - 1].id : null
+    const next = index < roles.length - 1 ? roles[index + 1].id : null
+    return { prev, next }
+  }
+
   return {
     roles,
     rolesByCategory,
@@ -144,5 +157,6 @@ export const useShadowPuppetStore = defineStore('shadowPuppet', () => {
     getRolesForSelect,
     searchRoles,
     getSameCategoryRoles,
+    getAdjacentRoles,
   }
 })

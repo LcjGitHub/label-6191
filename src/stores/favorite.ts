@@ -77,6 +77,19 @@ export const useFavoriteStore = defineStore('favorite', () => {
     favoriteIds.value.splice(0, favoriteIds.value.length)
   }
 
+  /**
+   * 获取相邻收藏角色的编号（按收藏顺序）
+   * @param roleId - 当前角色 ID
+   * @returns 上一个和下一个收藏角色的 ID，没有则返回 null
+   */
+  function getAdjacentFavoriteRoles(roleId: string): { prev: string | null; next: string | null } {
+    const index = favoriteIds.value.indexOf(roleId)
+    if (index === -1) return { prev: null, next: null }
+    const prev = index > 0 ? favoriteIds.value[index - 1] : null
+    const next = index < favoriteIds.value.length - 1 ? favoriteIds.value[index + 1] : null
+    return { prev, next }
+  }
+
   return {
     favoriteIds,
     favoriteCount,
@@ -86,5 +99,6 @@ export const useFavoriteStore = defineStore('favorite', () => {
     removeFavorite,
     toggleFavorite,
     clearAllFavorites,
+    getAdjacentFavoriteRoles,
   }
 })

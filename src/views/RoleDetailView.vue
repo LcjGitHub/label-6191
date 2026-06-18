@@ -53,6 +53,34 @@
     </el-card>
 
     <SameCategoryRoleList :roles="sameCategoryRoles" />
+
+    <div class="nav-btn-group">
+      <el-button
+        class="nav-btn nav-btn--prev"
+        :disabled="!adjacentRoles.prev"
+        @click="goToRole(adjacentRoles.prev)"
+      >
+        <el-icon class="nav-btn__icon"><ArrowLeft /></el-icon>
+        <span class="nav-btn__text">
+          <span class="nav-btn__label">上一个</span>
+          <span class="nav-btn__name">{{ prevRoleName }}</span>
+        </span>
+      </el-button>
+
+      <div class="nav-btn__divider"></div>
+
+      <el-button
+        class="nav-btn nav-btn--next"
+        :disabled="!adjacentRoles.next"
+        @click="goToRole(adjacentRoles.next)"
+      >
+        <span class="nav-btn__text">
+          <span class="nav-btn__label">下一个</span>
+          <span class="nav-btn__name">{{ nextRoleName }}</span>
+        </span>
+        <el-icon class="nav-btn__icon"><ArrowRight /></el-icon>
+      </el-button>
+    </div>
   </div>
 
   <el-empty v-else description="未找到该角色">
@@ -63,7 +91,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Star } from '@element-plus/icons-vue'
+import { ArrowLeft, ArrowRight, Star } from '@element-plus/icons-vue'
 import SilhouetteSvg from '@/components/SilhouetteSvg.vue'
 import SameCategoryRoleList from '@/components/SameCategoryRoleList.vue'
 import { useShadowPuppetStore } from '@/stores/shadowPuppet'
@@ -74,11 +102,50 @@ const router = useRouter()
 const store = useShadowPuppetStore()
 const favoriteStore = useFavoriteStore()
 
+const fromSource = computed(() => route.query.from as string | undefined)
+const fromPlayId = computed(() => route.query.playId as string | undefined)
+
 /** 当前角色数据 */
 const role = computed(() => {
   const id = route.params.id as string
   return store.getRoleById(id)
 })
+
+/** 相邻角色（根据来源决定顺序） */
+const adjacentRoles = computed(() => {
+  const id = route.params.id as string
+  if (fromSource.value === 'favorites') {
+    return favoriteStore.getAdjacentFavoriteRoles(id)
+  }
+  return store.getAdjacentRoles(id)
+})
+
+/** 上一个角色名称 */
+const prevRoleName = computed(() => {
+  if (!adjacentRoles.value.prev) return '无'
+  const prevRole = store.getRoleById(adjacentRoles.value.prev)
+  return prevRole?.name || '无'
+})
+
+/** 下一个角色名称 */
+const nextRoleName = computed(() => {
+  if (!adjacentRoles.value.next) return '无'
+  const nextRole = store.getRoleById(adjacentRoles.value.next)
+  return nextRole?.name || '无'
+})
+
+/** 切换到指定角色，保持来源上下文 */
+function goToRole(roleId: string | null) {
+  if (!roleId) return
+  const query: Record<string, string> = {}
+  if (fromSource.value) {
+    query.from = fromSource.value
+  }
+  if (fromPlayId.value) {
+    query.playId = fromPlayId.value
+  }
+  router.push({ name: 'role-detail', params: { id: roleId }, query })
+}
 
 /** 同行情其他角色列表 */
 const sameCategoryRoles = computed(() => {
@@ -96,9 +163,6 @@ function onToggleFavorite() {
     favoriteStore.toggleFavorite(role.value.id)
   }
 }
-
-const fromSource = computed(() => route.query.from as string | undefined)
-const fromPlayId = computed(() => route.query.playId as string | undefined)
 
 const backText = computed(() => {
   if (fromSource.value === 'play' && fromPlayId.value) {
@@ -238,6 +302,91 @@ function goBack() {
 
   .favorite-btn {
     margin-left: 0;
+  }
+}
+
+.nav-btn-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 32px;
+  background: #fffef9;
+  border: 1px solid #e8d5c4;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.nav-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 64px;
+  border: none;
+  background: transparent;
+  color: #5c3d2e;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: #fdf6ec;
+  color: #8b4513;
+}
+
+.nav-btn:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.nav-btn__icon {
+  font-size: 1.25rem;
+}
+
+.nav-btn__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.3;
+}
+
+.nav-btn--next .nav-btn__text {
+  align-items: flex-end;
+}
+
+.nav-btn__label {
+  font-size: 0.8rem;
+  color: #8b7355;
+}
+
+.nav-btn__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #5c3d2e;
+}
+
+.nav-btn__divider {
+  width: 1px;
+  height: 40px;
+  background: #e8d5c4;
+  margin: 0 8px;
+}
+
+@media (max-width: 768px) {
+  .nav-btn-group {
+    flex-direction: row;
+    padding: 4px;
+  }
+
+  .nav-btn {
+    height: 56px;
+    font-size: 0.85rem;
+  }
+
+  .nav-btn__name {
+    font-size: 0.9rem;
   }
 }
 </style>
