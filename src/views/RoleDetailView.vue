@@ -52,9 +52,7 @@
       </div>
     </el-card>
 
-    <SameCategoryRoleList :roles="sameCategoryRoles" />
-
-    <div class="nav-btn-group">
+    <div v-if="shouldShowNav" class="nav-btn-group">
       <el-button
         class="nav-btn nav-btn--prev"
         :disabled="!adjacentRoles.prev"
@@ -63,7 +61,14 @@
         <el-icon class="nav-btn__icon"><ArrowLeft /></el-icon>
         <span class="nav-btn__text">
           <span class="nav-btn__label">上一个</span>
-          <span class="nav-btn__name">{{ prevRoleName }}</span>
+          <span
+            v-if="adjacentRoles.prev"
+            class="nav-btn__name"
+          >{{ prevRoleName }}</span>
+          <span
+            v-else
+            class="nav-btn__name nav-btn__name--disabled"
+          >已到开头</span>
         </span>
       </el-button>
 
@@ -76,11 +81,20 @@
       >
         <span class="nav-btn__text">
           <span class="nav-btn__label">下一个</span>
-          <span class="nav-btn__name">{{ nextRoleName }}</span>
+          <span
+            v-if="adjacentRoles.next"
+            class="nav-btn__name"
+          >{{ nextRoleName }}</span>
+          <span
+            v-else
+            class="nav-btn__name nav-btn__name--disabled"
+          >已到末尾</span>
         </span>
         <el-icon class="nav-btn__icon"><ArrowRight /></el-icon>
       </el-button>
     </div>
+
+    <SameCategoryRoleList :roles="sameCategoryRoles" />
   </div>
 
   <el-empty v-else description="未找到该角色">
@@ -111,6 +125,17 @@ const role = computed(() => {
   return store.getRoleById(id)
 })
 
+/** 是否显示导航按钮组 */
+const shouldShowNav = computed(() => {
+  const id = route.params.id as string
+  if (fromSource.value === 'favorites') {
+    if (favoriteStore.favoriteCount <= 1) return false
+    if (!favoriteStore.isFavorited(id)) return false
+    return true
+  }
+  return store.roles.length > 1
+})
+
 /** 相邻角色（根据来源决定顺序） */
 const adjacentRoles = computed(() => {
   const id = route.params.id as string
@@ -122,16 +147,16 @@ const adjacentRoles = computed(() => {
 
 /** 上一个角色名称 */
 const prevRoleName = computed(() => {
-  if (!adjacentRoles.value.prev) return '无'
+  if (!adjacentRoles.value.prev) return ''
   const prevRole = store.getRoleById(adjacentRoles.value.prev)
-  return prevRole?.name || '无'
+  return prevRole?.name || ''
 })
 
 /** 下一个角色名称 */
 const nextRoleName = computed(() => {
-  if (!adjacentRoles.value.next) return '无'
+  if (!adjacentRoles.value.next) return ''
   const nextRole = store.getRoleById(adjacentRoles.value.next)
-  return nextRole?.name || '无'
+  return nextRole?.name || ''
 })
 
 /** 切换到指定角色，保持来源上下文 */
@@ -310,7 +335,7 @@ function goBack() {
   align-items: center;
   justify-content: center;
   gap: 0;
-  margin-top: 32px;
+  margin: 24px 0;
   background: #fffef9;
   border: 1px solid #e8d5c4;
   border-radius: 8px;
@@ -365,6 +390,11 @@ function goBack() {
   font-size: 1rem;
   font-weight: 600;
   color: #5c3d2e;
+}
+
+.nav-btn__name--disabled {
+  font-weight: 500;
+  color: #bba89a;
 }
 
 .nav-btn__divider {
