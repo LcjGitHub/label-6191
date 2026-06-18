@@ -3,7 +3,9 @@
     <h1 class="page-title">角色图鉴</h1>
     <p class="page-desc">按生旦净丑分类浏览皮影戏经典角色</p>
 
+    <label for="role-search" class="search-label">搜索角色</label>
     <el-input
+      id="role-search"
       v-model="searchKeyword"
       class="search-input"
       placeholder="搜索角色名称或别名，如：刘备、玄德、卧龙"
@@ -21,7 +23,7 @@
       />
     </el-tabs>
 
-    <div class="role-grid">
+    <div v-if="filteredRoles.length > 0" class="role-grid">
       <RoleCard
         v-for="role in filteredRoles"
         :key="role.id"
@@ -30,7 +32,7 @@
     </div>
 
     <el-empty
-      v-if="filteredRoles.length === 0"
+      v-else
       :description="emptyDescription"
     />
   </div>
@@ -76,6 +78,14 @@ const emptyDescription = computed(() => {
   margin: 0 0 24px;
   color: #8b7355;
   font-size: 0.95rem;
+}
+
+.search-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #5c3d2e;
 }
 
 .search-input {
