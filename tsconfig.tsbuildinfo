@@ -1,0 +1,1 @@
+{"root":["./src/env.d.ts","./src/main.ts","./src/router/index.ts","./src/stores/shadowpuppet.ts","./src/types/shadowpuppet.ts","./src/app.vue","./src/components/rolecard.vue","./src/components/silhouettesvg.vue","./src/views/homeview.vue","./src/views/roledetailview.vue"],"version":"5.7.3"}
