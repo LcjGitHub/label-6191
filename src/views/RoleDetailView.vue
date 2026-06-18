@@ -14,6 +14,17 @@
           <div class="detail-header">
             <h1 class="detail-name">{{ role.name }}</h1>
             <el-tag type="warning" size="large">{{ role.category }}</el-tag>
+            <el-button
+              class="favorite-btn"
+              :type="isFavorited ? 'warning' : 'default'"
+              @click="onToggleFavorite"
+            >
+              <el-icon class="el-icon--left">
+                <Star v-if="isFavorited" :fill="'#ffd700'" />
+                <Star v-else />
+              </el-icon>
+              {{ isFavorited ? '已收藏' : '收藏' }}
+            </el-button>
           </div>
 
           <section class="detail-section">
@@ -50,18 +61,32 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { Star } from '@element-plus/icons-vue'
 import SilhouetteSvg from '@/components/SilhouetteSvg.vue'
 import { useShadowPuppetStore } from '@/stores/shadowPuppet'
+import { useFavoriteStore } from '@/stores/favorite'
 
 const route = useRoute()
 const router = useRouter()
 const store = useShadowPuppetStore()
+const favoriteStore = useFavoriteStore()
 
 /** 当前角色数据 */
 const role = computed(() => {
   const id = route.params.id as string
   return store.getRoleById(id)
 })
+
+const isFavorited = computed(() => {
+  if (!role.value) return false
+  return favoriteStore.isFavorited(role.value.id)
+})
+
+function onToggleFavorite() {
+  if (role.value) {
+    favoriteStore.toggleFavorite(role.value.id)
+  }
+}
 
 const fromSource = computed(() => route.query.from as string | undefined)
 const fromPlayId = computed(() => route.query.playId as string | undefined)
@@ -70,12 +95,17 @@ const backText = computed(() => {
   if (fromSource.value === 'play' && fromPlayId.value) {
     return '返回剧目'
   }
+  if (fromSource.value === 'favorites') {
+    return '返回收藏夹'
+  }
   return '返回图鉴'
 })
 
 function goBack() {
   if (fromSource.value === 'play' && fromPlayId.value) {
     router.push({ name: 'play-detail', params: { id: fromPlayId.value } })
+  } else if (fromSource.value === 'favorites') {
+    router.push({ name: 'favorites' })
   } else {
     router.push({ name: 'home' })
   }
@@ -125,6 +155,7 @@ function goBack() {
   align-items: center;
   gap: 16px;
   margin-bottom: 28px;
+  flex-wrap: wrap;
 }
 
 .detail-name {
@@ -132,6 +163,10 @@ function goBack() {
   font-size: 2rem;
   color: #5c3d2e;
   letter-spacing: 4px;
+}
+
+.favorite-btn {
+  margin-left: auto;
 }
 
 .detail-section {
@@ -185,6 +220,10 @@ function goBack() {
 
   .detail-silhouette {
     height: 240px;
+  }
+
+  .favorite-btn {
+    margin-left: 0;
   }
 }
 </style>

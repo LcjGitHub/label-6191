@@ -20,6 +20,22 @@
         >
           剧目百科
         </router-link>
+        <router-link
+          to="/favorites"
+          class="app-nav__link"
+          :class="{ 'is-active': isFavoriteActive }"
+        >
+          <el-icon class="el-icon--left">
+            <Star :fill="isFavoriteActive ? '#8b4513' : 'none'" />
+          </el-icon>
+          收藏夹
+          <el-badge
+            v-if="favoriteCount > 0"
+            :value="favoriteCount"
+            :max="99"
+            class="fav-badge"
+          />
+        </router-link>
       </nav>
     </header>
     <main class="app-main">
@@ -34,18 +50,29 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { Star } from '@element-plus/icons-vue'
+import { useFavoriteStore } from '@/stores/favorite'
 
 const route = useRoute()
+const favoriteStore = useFavoriteStore()
+
+const favoriteCount = computed(() => favoriteStore.favoriteCount)
 
 const isRoleActive = computed(() => {
   if (route.name === 'home') return true
-  if (route.name === 'role-detail' && route.query.from !== 'play') return true
+  if (route.name === 'role-detail' && route.query.from !== 'play' && route.query.from !== 'favorites') return true
   return false
 })
 
 const isPlayActive = computed(() => {
   if (route.name === 'play-list' || route.name === 'play-detail') return true
   if (route.name === 'role-detail' && route.query.from === 'play') return true
+  return false
+})
+
+const isFavoriteActive = computed(() => {
+  if (route.name === 'favorites') return true
+  if (route.name === 'role-detail' && route.query.from === 'favorites') return true
   return false
 })
 </script>
@@ -95,6 +122,7 @@ const isPlayActive = computed(() => {
 .app-nav {
   display: flex;
   gap: 8px;
+  align-items: center;
 }
 
 .app-nav__link {
@@ -104,6 +132,10 @@ const isPlayActive = computed(() => {
   border-radius: 4px;
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .app-nav__link:hover {
@@ -114,6 +146,12 @@ const isPlayActive = computed(() => {
   background: #ffd700;
   color: #8b4513;
   font-weight: 600;
+}
+
+.fav-badge {
+  margin-left: 4px;
+  --el-badge-bg-color: #ff6b6b;
+  --el-badge-text-color: #fff;
 }
 
 .app-main {
@@ -143,6 +181,7 @@ const isPlayActive = computed(() => {
   .app-nav {
     width: 100%;
     justify-content: flex-start;
+    flex-wrap: wrap;
   }
 }
 </style>

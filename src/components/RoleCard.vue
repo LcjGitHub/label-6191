@@ -4,6 +4,18 @@
     shadow="hover"
     @click="goDetail"
   >
+    <el-button
+      class="favorite-btn"
+      :type="isFavorited ? 'warning' : 'default'"
+      :text="!isFavorited"
+      circle
+      @click.stop="onToggleFavorite"
+    >
+      <el-icon :size="16">
+        <Star v-if="isFavorited" :fill="'#ffd700'" />
+        <Star v-else />
+      </el-icon>
+    </el-button>
     <div class="role-card__silhouette">
       <SilhouetteSvg :path="role.silhouettePath" />
     </div>
@@ -16,19 +28,33 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { Star } from '@element-plus/icons-vue'
 import SilhouetteSvg from './SilhouetteSvg.vue'
 import type { ShadowPuppet } from '@/types/shadowPuppet'
+import { useFavoriteStore } from '@/stores/favorite'
 
 const props = defineProps<{
   role: ShadowPuppet
+  fromSource?: string
 }>()
 
 const router = useRouter()
+const favoriteStore = useFavoriteStore()
 
-/** 跳转角色详情页 */
+const isFavorited = computed(() => favoriteStore.isFavorited(props.role.id))
+
+function onToggleFavorite() {
+  favoriteStore.toggleFavorite(props.role.id)
+}
+
 function goDetail() {
-  router.push({ name: 'role-detail', params: { id: props.role.id } })
+  const query: Record<string, string> = {}
+  if (props.fromSource) {
+    query.from = props.fromSource
+  }
+  router.push({ name: 'role-detail', params: { id: props.role.id }, query })
 }
 </script>
 
@@ -38,6 +64,7 @@ function goDetail() {
   transition: transform 0.2s ease;
   border: 1px solid #e8d5c4;
   background: #fffef9;
+  position: relative;
 }
 
 .role-card:hover {
@@ -46,6 +73,14 @@ function goDetail() {
 
 .role-card :deep(.el-card__body) {
   padding: 16px;
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  --el-button-hover-text-color: #ffd700;
 }
 
 .role-card__silhouette {
